@@ -1,8 +1,16 @@
-﻿using Core.Domain.Entities;
+﻿using Authentication_System.Filters;
+using Core.Domain.Entities;
+using Core.Domain.RepositoryContracts;
+using Core.ServiceContracts;
+using Core.Services;
 using Infrastructure.DB;
+using Infrastructure.Externals;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -46,6 +54,20 @@ namespace Authentication_System.Extensions
                         ),
                 };
             });
+
+            builder.Services.AddApiVersioning(opt =>
+            {
+                opt.ApiVersionReader = new UrlSegmentApiVersionReader();
+                opt.ReportApiVersions = true;
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+
+            builder.Services.AddScoped<IApiKeysServices, ApiKeysServices>();
+            builder.Services.AddScoped<IApiKeysRepository, ApiKeysRepository>();
+            builder.Services.AddScoped<IJwtServices, JwtServices>();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<ApiKeyAuthFilter>();
 
             return builder;
         }

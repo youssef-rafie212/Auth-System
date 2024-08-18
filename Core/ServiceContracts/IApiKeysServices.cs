@@ -1,10 +1,14 @@
-﻿using Core.DTO.ApiKeyDtos;
+﻿using Core.Domain.Entities;
+using Core.DTO.ApiKeyDtos;
 
 namespace Core.ServiceContracts
 {
     public interface IApiKeysServices
     {
-        // Gets an API key for a new client
-        Task<GetApiKeyResponseDto> GetApiKey(GetApiKeyRequestDto getApiKeyDto);
+        // Generates an API key for a new client
+        Task<GetApiKeyResponseDto> GetNewApiKey(GetApiKeyRequestDto getApiKeyDto);
+
+        // Finds API key in the database 
+        Task<APIKey> GetAPIKey(string key);
     }
 }

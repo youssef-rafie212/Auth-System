@@ -1,6 +1,7 @@
 ﻿using Core.Domain.Entities;
 using Core.Domain.RepositoryContracts;
 using Infrastructure.DB;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -19,6 +20,11 @@ namespace Infrastructure.Repositories
             await _db.SaveChangesAsync();
 
             return apiKey.Key!;
+        }
+
+        public async Task<APIKey?> GetKey(string key)
+        {
+            return await _db.APIKeys.FirstOrDefaultAsync(k => k.Key == key);
         }
     }
 }

@@ -15,7 +15,18 @@ namespace Core.Services
             _repo = repo;
         }
 
-        public async Task<GetApiKeyResponseDto> GetApiKey(GetApiKeyRequestDto getApiKeyDto)
+        public async Task<APIKey> GetAPIKey(string key)
+        {
+            APIKey? apiKey = await _repo.GetKey(key);
+
+            if (apiKey == null) throw new ArgumentException("Key doesn't exist");
+
+            if (!apiKey.IsActive) throw new ArgumentException("Key is no longer active");
+
+            return apiKey;
+        }
+
+        public async Task<GetApiKeyResponseDto> GetNewApiKey(GetApiKeyRequestDto getApiKeyDto)
         {
             string key = await _repo.CreateKey(new APIKey
             {
