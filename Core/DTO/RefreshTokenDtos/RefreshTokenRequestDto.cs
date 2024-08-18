@@ -2,7 +2,7 @@
 
 namespace Core.DTO.RefreshTokenDtos
 {
-    public class RefreshTokenDto
+    public class RefreshTokenRequestDto
     {
         [Required]
         public string? OldToken { get; set; }
