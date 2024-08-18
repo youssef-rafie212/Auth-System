@@ -1,11 +1,11 @@
 ﻿using Core.Domain.Entities;
 using Core.DTO.RefreshTokenDtos;
+using Core.Helpers;
 using Core.ServiceContracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Core.Services
@@ -21,14 +21,7 @@ namespace Core.Services
 
         public string GenerateRefreshToken()
         {
-            var randomBytes = new byte[32];
-
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomBytes);
-            }
-
-            return Convert.ToBase64String(randomBytes);
+            return ServicesHelpers.GenerateUniqueString();
         }
 
         public async Task<string> GenerateToken(ApplicationUser user)
@@ -69,9 +62,27 @@ namespace Core.Services
             return jwt;
         }
 
-        public Task<string> RefreshToken(RefreshTokenRequestDto refreshTokenDto)
+        public async Task<RefreshTokenResponseDto> RefreshToken(RefreshTokenRequestDto refreshTokenDto)
         {
-            throw new NotImplementedException();
+            var handler = new JwtSecurityTokenHandler();
+            JwtSecurityToken expiredToken = handler.ReadJwtToken(refreshTokenDto.OldToken);
+
+            string userId = expiredToken.Subject;
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null) throw new ArgumentException("No user is associated with this token (old token).");
+
+            if (user.RefreshToken == null || user.RefreshToken != refreshTokenDto.RefreshToken || user.RefreshTokenExpiresAt < DateTime.UtcNow)
+                throw new ArgumentException("Invalid or expired refresh token.");
+
+            string newToken = await GenerateToken(user);
+            string newRefreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiresAt = DateTime.UtcNow.AddMonths(1);
+            await _userManager.UpdateAsync(user);
+
+            return new RefreshTokenResponseDto { NewRefreshToken = newRefreshToken, NewToken = newToken };
         }
 
         public async Task<bool> ValidateToken(string token)

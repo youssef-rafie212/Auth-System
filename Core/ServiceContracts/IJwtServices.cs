@@ -11,6 +11,6 @@ namespace Core.ServiceContracts
 
         Task<bool> ValidateToken(string token);
 
-        Task<string> RefreshToken(RefreshTokenRequestDto refreshTokenDto);
+        Task<RefreshTokenResponseDto> RefreshToken(RefreshTokenRequestDto refreshTokenDto);
     }
 }

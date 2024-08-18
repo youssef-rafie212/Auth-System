@@ -2,7 +2,7 @@
 
 namespace Core.DTO.ApiKeyDtos
 {
-    public class GetApiKeyDto
+    public class GetApiKeyRequestDto
     {
         [Required]
         public string? ClientName { get; set; }
