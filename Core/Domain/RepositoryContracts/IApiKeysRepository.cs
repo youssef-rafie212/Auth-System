@@ -6,6 +6,7 @@ namespace Core.Domain.RepositoryContracts
     {
         Task<string> CreateKey(APIKey apiKey);
 
-        Task<APIKey?> GetKey(string key);
+        Task<APIKey?> GetApiKeyByKey(string key);
+        Task<APIKey?> GetApiKeyByClientName(string clientName);
     }
 }

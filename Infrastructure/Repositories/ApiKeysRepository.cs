@@ -22,9 +22,15 @@ namespace Infrastructure.Repositories
             return apiKey.Key!;
         }
 
-        public async Task<APIKey?> GetKey(string key)
+        public async Task<APIKey?> GetApiKeyByClientName(string clientName)
+        {
+            return await _db.APIKeys.FirstOrDefaultAsync(k => k.ClientName == clientName);
+        }
+
+        public async Task<APIKey?> GetApiKeyByKey(string key)
         {
             return await _db.APIKeys.FirstOrDefaultAsync(k => k.Key == key);
         }
+
     }
 }

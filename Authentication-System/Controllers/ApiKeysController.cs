@@ -19,7 +19,14 @@ namespace Authentication_System.Controllers
         [HttpGet("new-key")]
         public async Task<IActionResult> Get(GetApiKeyRequestDto getApiKeyRequestDto)
         {
-            return Ok(await _services.GetApiKey(getApiKeyRequestDto));
+            try
+            {
+                return Ok(await _services.GetNewApiKey(getApiKeyRequestDto));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, statusCode: 400);
+            }
         }
     }
 }

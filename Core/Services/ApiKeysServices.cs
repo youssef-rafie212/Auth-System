@@ -17,7 +17,7 @@ namespace Core.Services
 
         public async Task<APIKey> GetAPIKey(string key)
         {
-            APIKey? apiKey = await _repo.GetKey(key);
+            APIKey? apiKey = await _repo.GetApiKeyByKey(key);
 
             if (apiKey == null) throw new ArgumentException("Key doesn't exist");
 
@@ -28,6 +28,10 @@ namespace Core.Services
 
         public async Task<GetApiKeyResponseDto> GetNewApiKey(GetApiKeyRequestDto getApiKeyDto)
         {
+            APIKey? clientNameExists = await _repo.GetApiKeyByClientName(getApiKeyDto.ClientName!);
+
+            if (clientNameExists != null) throw new ArgumentException("Client name already exists.");
+
             string key = await _repo.CreateKey(new APIKey
             {
                 Id = Guid.NewGuid(),
