@@ -10,5 +10,9 @@ namespace Core.ServiceContracts
 
         // Finds API key in the database 
         Task<APIKey> GetAPIKey(string key);
+
+        Task<bool> DeactivateApiKey(DeactivateApiKeyDto deactivateApiKeyDto);
+        Task<bool> ActivateApiKey(ActivateApiKeyDto activateApiKeyDto);
+        Task<bool> DeleteApiKey(DeleteApiKeyDto deleteApiKeyDto);
     }
 }

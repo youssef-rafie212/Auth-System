@@ -15,6 +15,30 @@ namespace Core.Services
             _repo = repo;
         }
 
+        public async Task<bool> ActivateApiKey(ActivateApiKeyDto activateApiKeyDto)
+        {
+            APIKey? apiKey = await _repo.GetApiKeyByKey(activateApiKeyDto.Key!);
+            if (apiKey == null) return false;
+
+            return await _repo.ActivateApiKey(apiKey);
+        }
+
+        public async Task<bool> DeactivateApiKey(DeactivateApiKeyDto deactivateApiKeyDto)
+        {
+            APIKey? apiKey = await _repo.GetApiKeyByKey(deactivateApiKeyDto.Key!);
+            if (apiKey == null) return false;
+
+            return await _repo.DeactivateApiKey(apiKey);
+        }
+
+        public async Task<bool> DeleteApiKey(DeleteApiKeyDto deleteApiKeyDto)
+        {
+            APIKey? apiKey = await _repo.GetApiKeyByKey(deleteApiKeyDto.Key!);
+            if (apiKey == null) return false;
+
+            return await _repo.DeleteApiKey(apiKey);
+        }
+
         public async Task<APIKey> GetAPIKey(string key)
         {
             APIKey? apiKey = await _repo.GetApiKeyByKey(key);
