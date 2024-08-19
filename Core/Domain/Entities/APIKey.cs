@@ -10,6 +10,6 @@ namespace Core.Domain.Entities
         public string? ClientName { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
-        public Guid TenantId { get; set; }
+        public string? TenantId { get; set; }
     }
 }

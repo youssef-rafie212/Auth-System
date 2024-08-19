@@ -63,7 +63,7 @@ namespace Core.Services
                 Key = ServicesHelpers.GenerateUniqueString(),
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
-                TenantId = Guid.NewGuid(),
+                TenantId = Guid.NewGuid().ToString(),
             });
 
             return new GetApiKeyResponseDto { ApiKey = key };

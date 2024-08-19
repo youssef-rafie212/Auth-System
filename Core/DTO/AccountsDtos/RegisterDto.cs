@@ -16,7 +16,7 @@ namespace Core.DTO.AccountsDtos
         public string? Password { get; set; }
 
         [Required]
-        [Compare("Passowrd")]
+        [Compare("Password")]
         public string? PasswordConfirmation { get; set; }
 
         [Phone]
