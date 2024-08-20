@@ -28,7 +28,10 @@ namespace Authentication_System.Extensions
                 options.UseSqlServer(Environment.GetEnvironmentVariable("AUTHSYS_DEV_DB_DEFAULT_URL"));
             });
 
-            builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
+            builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(opt =>
+            {
+                opt.User.RequireUniqueEmail = true;
+            })
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<AppDBContext>()
             .AddUserStore<UserStore<ApplicationUser, ApplicationRole, AppDBContext, Guid>>()

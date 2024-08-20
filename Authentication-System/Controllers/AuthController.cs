@@ -25,22 +25,13 @@ namespace Authentication_System.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Register(RegisterDto registerDto)
         {
-            ApplicationUser? userWithTheSameEmail = await _userManager.FindByEmailAsync(registerDto.Email!);
-            if (userWithTheSameEmail != null) return Problem("Email already exists.", statusCode: 400);
-
             ApplicationUser user = new ApplicationUser
             {
+                Id = Guid.NewGuid(),
                 UserName = registerDto.Username,
                 Email = registerDto.Email,
                 PhoneNumber = registerDto.Phone
             };
-
-            string token = await _jwtServices.GenerateToken(user);
-            string refreshToken = _jwtServices.GenerateRefreshToken();
-
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiresAt = DateTime.UtcNow.AddMonths(1);
-            user.TenantId = HttpContext.Items["TenantId"] as string;
 
             IdentityResult result = await _userManager.CreateAsync(user, registerDto.Password!);
 
@@ -49,6 +40,15 @@ namespace Authentication_System.Controllers
                 string errors = string.Join(" ,\n", result.Errors.Select(e => e.Description));
                 return Problem(errors, statusCode: 400);
             }
+
+            string token = await _jwtServices.GenerateToken(user);
+            string refreshToken = _jwtServices.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiresAt = DateTime.UtcNow.AddMonths(1);
+            user.TenantId = HttpContext.Items["TenantId"] as string;
+
+            await _userManager.UpdateAsync(user);
 
             return Ok(new
             {

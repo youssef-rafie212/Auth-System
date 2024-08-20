@@ -50,7 +50,7 @@ namespace Core.Services
             SecurityTokenDescriptor descriptor = new()
             {
                 Subject = new ClaimsIdentity(claims),
-                Issuer = Environment.GetEnvironmentVariable("BEQALTK_DEV_JWT_ISSUER"),
+                Issuer = Environment.GetEnvironmentVariable("AUTHSYS_DEV_JWT_ISSUER"),
                 Expires = expires,
                 SigningCredentials = credentials,
             };
