@@ -4,7 +4,6 @@ using Core.Domain.RepositoryContracts;
 using Core.ServiceContracts;
 using Core.Services;
 using Infrastructure.DB;
-using Infrastructure.Externals;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -69,7 +68,6 @@ namespace Authentication_System.Extensions
             builder.Services.AddScoped<IApiKeysServices, ApiKeysServices>();
             builder.Services.AddScoped<IApiKeysRepository, ApiKeysRepository>();
             builder.Services.AddScoped<IJwtServices, JwtServices>();
-            builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<ApiKeyAuthFilter>();
 
             return builder;

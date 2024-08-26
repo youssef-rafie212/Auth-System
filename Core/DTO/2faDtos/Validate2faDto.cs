@@ -2,7 +2,7 @@
 
 namespace Core.DTO._2faDtos
 {
-    public class Verify2faDto
+    public class Validate2faDto
     {
         [Required]
         public string? Username { get; set; }
