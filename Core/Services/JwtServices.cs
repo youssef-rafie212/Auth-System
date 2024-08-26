@@ -13,15 +13,17 @@ namespace Core.Services
     public class JwtServices : IJwtServices
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ServicesHelpers _servicesHelpers;
 
-        public JwtServices(UserManager<ApplicationUser> userManager)
+        public JwtServices(UserManager<ApplicationUser> userManager, ServicesHelpers servicesHelpers)
         {
             _userManager = userManager;
+            _servicesHelpers = servicesHelpers;
         }
 
         public string GenerateRefreshToken()
         {
-            return ServicesHelpers.GenerateUniqueString();
+            return _servicesHelpers.GenerateUniqueString();
         }
 
         public async Task<string> GenerateToken(ApplicationUser user)

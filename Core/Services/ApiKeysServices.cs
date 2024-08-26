@@ -8,11 +8,13 @@ namespace Core.Services
 {
     public class ApiKeysServices : IApiKeysServices
     {
-        private IApiKeysRepository _repo;
+        private readonly IApiKeysRepository _repo;
+        private readonly ServicesHelpers _servicesHelpers;
 
-        public ApiKeysServices(IApiKeysRepository repo)
+        public ApiKeysServices(IApiKeysRepository repo, ServicesHelpers servicesHelpers)
         {
             _repo = repo;
+            _servicesHelpers = servicesHelpers;
         }
 
         public async Task<bool> ActivateApiKey(ActivateApiKeyDto activateApiKeyDto)
@@ -60,7 +62,7 @@ namespace Core.Services
             {
                 Id = Guid.NewGuid(),
                 ClientName = getApiKeyDto.ClientName!,
-                Key = ServicesHelpers.GenerateUniqueString(),
+                Key = _servicesHelpers.GenerateUniqueString(),
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
                 TenantId = Guid.NewGuid().ToString(),

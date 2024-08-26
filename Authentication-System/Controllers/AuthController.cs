@@ -2,6 +2,7 @@
 using Core.Domain.Entities;
 using Core.DTO._2faDtos;
 using Core.DTO.AccountsDtos;
+using Core.Helpers;
 using Core.ServiceContracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,17 @@ namespace Authentication_System.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IJwtServices _jwtServices;
+        private readonly ValidationHelpers _helpers;
 
         public AuthController(
             UserManager<ApplicationUser> userManager,
-            IJwtServices jwtServices
-            )
+            IJwtServices jwtServices,
+            ValidationHelpers helpers
+        )
         {
             _userManager = userManager;
             _jwtServices = jwtServices;
+            _helpers = helpers;
         }
 
         [HttpPost("[action]")]
@@ -67,6 +71,17 @@ namespace Authentication_System.Controllers
             ApplicationUser? user = await _userManager.FindByNameAsync(siginDto.Username!);
             if (user == null) return Problem("Wrong credentials.", statusCode: 400);
 
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
+
             bool correctPassword = await _userManager.CheckPasswordAsync(user, siginDto.Password!);
             if (!correctPassword) return Problem("Wrong credentials.", statusCode: 400);
 
@@ -97,10 +112,44 @@ namespace Authentication_System.Controllers
         }
 
         [HttpPost("[action]")]
+        public async Task<IActionResult> Signout(SignoutDto signoutDto)
+        {
+            ApplicationUser? user = await _userManager.FindByNameAsync(signoutDto.Username!);
+            if (user == null) return Problem("No user found.", statusCode: 400);
+
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
+
+            user.RefreshToken = null;
+            await _userManager.UpdateAsync(user);
+
+            return Ok("User signed out successfully.");
+        }
+
+        [HttpPost("[action]")]
         public async Task<IActionResult> Enable2fa(Enable2faDto enable2faDto)
         {
             ApplicationUser? user = await _userManager.FindByNameAsync(enable2faDto.Username!);
             if (user == null) return Problem("No user found with the provided username.", statusCode: 400);
+
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
 
             IdentityResult result = await _userManager.SetTwoFactorEnabledAsync(user, true);
             if (!result.Succeeded) return Problem("Failed to enable 2fa please try again later.", statusCode: 400);
@@ -114,6 +163,17 @@ namespace Authentication_System.Controllers
             ApplicationUser? user = await _userManager.FindByNameAsync(disable2faDto.Username!);
             if (user == null) return Problem("No user found with the provided username.", statusCode: 400);
 
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
+
             IdentityResult result = await _userManager.SetTwoFactorEnabledAsync(user, false);
             if (!result.Succeeded) return Problem("Failed to disable 2fa please try again later.", statusCode: 400);
 
@@ -125,6 +185,17 @@ namespace Authentication_System.Controllers
         {
             ApplicationUser? user = await _userManager.FindByNameAsync(validate2faDto.Username!);
             if (user == null) return Problem("No user found with the provided username.", statusCode: 400);
+
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
 
             bool succeeded = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", validate2faDto.Code!);
             if (!succeeded) return Problem("Invalid 2fa code.", statusCode: 400);

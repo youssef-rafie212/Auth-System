@@ -2,9 +2,9 @@
 
 namespace Core.Helpers
 {
-    public static class ServicesHelpers
+    public class ServicesHelpers
     {
-        public static string GenerateUniqueString()
+        public string GenerateUniqueString()
         {
             var randomBytes = new byte[32];
 

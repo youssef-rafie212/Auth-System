@@ -1,6 +1,7 @@
 ﻿using Authentication_System.Filters;
 using Core.Domain.Entities;
 using Core.Domain.RepositoryContracts;
+using Core.Helpers;
 using Core.ServiceContracts;
 using Core.Services;
 using Infrastructure.DB;
@@ -68,6 +69,8 @@ namespace Authentication_System.Extensions
             builder.Services.AddScoped<IApiKeysServices, ApiKeysServices>();
             builder.Services.AddScoped<IApiKeysRepository, ApiKeysRepository>();
             builder.Services.AddScoped<IJwtServices, JwtServices>();
+            builder.Services.AddScoped<ServicesHelpers>();
+            builder.Services.AddScoped<ValidationHelpers>();
             builder.Services.AddScoped<ApiKeyAuthFilter>();
 
             return builder;
