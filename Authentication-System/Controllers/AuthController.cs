@@ -2,6 +2,7 @@
 using Core.Domain.Entities;
 using Core.DTO._2faDtos;
 using Core.DTO.AccountsDtos;
+using Core.DTO.EmailConfirmationDtos;
 using Core.Helpers;
 using Core.ServiceContracts;
 using Microsoft.AspNetCore.Identity;
@@ -151,6 +152,8 @@ namespace Authentication_System.Controllers
                 return Problem(ex.Message, statusCode: 401);
             }
 
+            if (!user.EmailConfirmed) return Problem("User must confirm their email before enabling 2FA.", statusCode: 400);
+
             IdentityResult result = await _userManager.SetTwoFactorEnabledAsync(user, true);
             if (!result.Succeeded) return Problem("Failed to enable 2fa please try again later.", statusCode: 400);
 
@@ -213,6 +216,62 @@ namespace Authentication_System.Controllers
                 token,
                 refreshToken
             });
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailDto confirmEmailDto)
+        {
+            ApplicationUser? user = await _userManager.FindByEmailAsync(confirmEmailDto.Email!);
+            if (user == null) return Problem("No user found with this email.", statusCode: 400);
+
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
+
+            if (user.EmailConfirmed) return Problem("User already confirmed their email.", statusCode: 400);
+
+            string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            return Ok(new
+            {
+                EmailConfirmationCode = code,
+                UserEmail = user.Email,
+            });
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ValidateConfirmEmail(ValidateConfirmEmailDto validateConfirmEmailDto)
+        {
+            ApplicationUser? user = await _userManager.FindByNameAsync(validateConfirmEmailDto.Username!);
+            if (user == null) return Problem("No user found with the provided username.", statusCode: 400);
+
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
+
+            IdentityResult result = await _userManager.ConfirmEmailAsync(user, validateConfirmEmailDto.Code!);
+
+            if (!result.Succeeded)
+            {
+                string errors = string.Join(" ,\n", result.Errors.Select(e => e.Description));
+                return Problem(errors, statusCode: 400);
+            }
+
+            return Ok("User email is confirmed successfully.");
         }
     }
 }
