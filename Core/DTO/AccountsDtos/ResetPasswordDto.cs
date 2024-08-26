@@ -9,6 +9,9 @@ namespace Core.DTO.AccountsDtos
         public string? Email { get; set; }
 
         [Required]
+        public string? ResetToken { get; set; }
+
+        [Required]
         public string? NewPassword { get; set; }
     }
 }

@@ -273,5 +273,59 @@ namespace Authentication_System.Controllers
 
             return Ok("User email is confirmed successfully.");
         }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            ApplicationUser? user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email!);
+            if (user == null) return Problem("No user found with this email.", statusCode: 400);
+
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
+
+            string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            return Ok(new
+            {
+                PasswordResetToken = resetToken,
+                UserEmail = user.Email,
+            });
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            ApplicationUser? user = await _userManager.FindByEmailAsync(resetPasswordDto.Email!);
+            if (user == null) return Problem("No user found with this email.", statusCode: 400);
+
+            // Validate that the user belongs to the current client.
+            try
+            {
+                string tenantId = (HttpContext.Items["TenantId"] as string)!;
+                _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Problem(ex.Message, statusCode: 401);
+            }
+
+            IdentityResult result = await _userManager.ResetPasswordAsync(user, resetPasswordDto.ResetToken!, resetPasswordDto.NewPassword!);
+
+            if (!result.Succeeded)
+            {
+                string errors = string.Join(" ,\n", result.Errors.Select(e => e.Description));
+                return Problem(errors, statusCode: 400);
+            }
+
+            return Ok("User password was reset successfully.");
+        }
     }
 }
