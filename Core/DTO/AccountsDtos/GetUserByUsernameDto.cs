@@ -2,7 +2,7 @@
 
 namespace Core.DTO.AccountsDtos
 {
-    public class GetUserByUsername
+    public class GetUserByUsernameDto
     {
         [Required]
         public string? Username { get; set; }

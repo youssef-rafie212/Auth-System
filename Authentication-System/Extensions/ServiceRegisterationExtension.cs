@@ -72,6 +72,7 @@ namespace Authentication_System.Extensions
             builder.Services.AddScoped<IApiKeysRepository, ApiKeysRepository>();
             builder.Services.AddScoped<IJwtServices, JwtServices>();
             builder.Services.AddScoped<IAuthServices, AuthServices>();
+            builder.Services.AddScoped<IUsersServices, UserServices>();
             builder.Services.AddScoped<ServicesHelpers>();
             builder.Services.AddScoped<ValidationHelpers>();
             builder.Services.AddScoped<ApiKeyAuthFilter>();

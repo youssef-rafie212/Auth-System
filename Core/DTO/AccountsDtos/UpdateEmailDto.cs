@@ -6,10 +6,10 @@ namespace Core.DTO.AccountsDtos
     {
         [Required]
         [EmailAddress]
-        string? OldEmail { get; set; }
+        public string? OldEmail { get; set; }
 
         [Required]
         [EmailAddress]
-        string? NewEmail { get; set; }
+        public string? NewEmail { get; set; }
     }
 }

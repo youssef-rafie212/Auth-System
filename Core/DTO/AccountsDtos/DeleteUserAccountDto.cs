@@ -2,7 +2,7 @@
 
 namespace Core.DTO.AccountsDtos
 {
-    public class DeleteUserAccount
+    public class DeleteUserAccountDto
     {
         [Required]
         public string? UserName { get; set; }

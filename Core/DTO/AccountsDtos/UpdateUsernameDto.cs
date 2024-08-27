@@ -5,9 +5,9 @@ namespace Core.DTO.AccountsDtos
     public class UpdateUsernameDto
     {
         [Required]
-        string? OldUsername { get; set; }
+        public string? OldUsername { get; set; }
 
         [Required]
-        string? NewUsername { get; set; }
+        public string? NewUsername { get; set; }
     }
 }
