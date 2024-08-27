@@ -66,9 +66,12 @@ namespace Authentication_System.Extensions
                 opt.DefaultApiVersion = new ApiVersion(1, 0);
             });
 
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddScoped<IApiKeysServices, ApiKeysServices>();
             builder.Services.AddScoped<IApiKeysRepository, ApiKeysRepository>();
             builder.Services.AddScoped<IJwtServices, JwtServices>();
+            builder.Services.AddScoped<IAuthServices, AuthServices>();
             builder.Services.AddScoped<ServicesHelpers>();
             builder.Services.AddScoped<ValidationHelpers>();
             builder.Services.AddScoped<ApiKeyAuthFilter>();
