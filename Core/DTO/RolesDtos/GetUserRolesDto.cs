@@ -2,7 +2,7 @@
 
 namespace Core.DTO.RolesDtos
 {
-    internal class GetUserRolesDto
+    public class GetUserRolesDto
     {
         [Required]
         public string? Username { get; set; }

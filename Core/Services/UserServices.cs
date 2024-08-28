@@ -25,12 +25,12 @@ namespace Core.Services
 
         public async Task DeleteUserAccount(DeleteUserAccountDto deleteUserAccountDto)
         {
-            ApplicationUser? user = await _userManager.FindByNameAsync(deleteUserAccountDto.UserName!);
+            ApplicationUser? user = await _userManager.FindByNameAsync(deleteUserAccountDto.Username!);
             if (user == null) throw new Exception("User doesn't exist.");
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             IdentityResult result = await _userManager.DeleteAsync(user);
 
@@ -55,7 +55,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             return user;
         }
@@ -67,7 +67,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             return user;
         }
@@ -81,7 +81,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             user.Email = updateEmailDto.NewEmail;
             await _userManager.UpdateAsync(user);
@@ -95,7 +95,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             IdentityResult result = await _userManager.ChangePasswordAsync(user, updatePasswordDto.OldPassword!, updatePasswordDto.NewPassword!);
 
@@ -113,7 +113,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             user.UserName = updateUsernameDto.NewUsername!;
             await _userManager.UpdateAsync(user);

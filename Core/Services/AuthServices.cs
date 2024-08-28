@@ -31,7 +31,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             if (user.EmailConfirmed) throw new Exception("User already confirmed their email.");
 
@@ -51,7 +51,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             IdentityResult result = await _userManager.SetTwoFactorEnabledAsync(user, false);
             if (!result.Succeeded) throw new Exception("Failed to disable 2fa please try again later.");
@@ -64,7 +64,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             if (!user.EmailConfirmed) throw new Exception("User must confirm their email before enabling 2FA.");
 
@@ -79,7 +79,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -131,7 +131,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             IdentityResult result = await _userManager.ResetPasswordAsync(user, resetPasswordDto.ResetToken!, resetPasswordDto.NewPassword!);
 
@@ -149,7 +149,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             bool correctPassword = await _userManager.CheckPasswordAsync(user, siginDto.Password!);
             if (!correctPassword) throw new Exception("Wrong credentials.");
@@ -183,7 +183,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             user.RefreshToken = null;
             await _userManager.UpdateAsync(user);
@@ -196,7 +196,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             bool succeeded = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", validate2faDto.Code!);
             if (!succeeded) throw new Exception("Invalid 2fa code.");
@@ -223,7 +223,7 @@ namespace Core.Services
 
             // Validate that the user belongs to the current client.
             string tenantId = (_contextAccessor.HttpContext!.Items["TenantId"] as string)!;
-            _helpers.ThrowIfUnmatchedTenantId(tenantId, user!);
+            _helpers.ThrowIfUnmatchedUserTenantId(tenantId, user!);
 
             IdentityResult result = await _userManager.ConfirmEmailAsync(user, validateConfirmEmailDto.Code!);
 

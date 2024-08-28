@@ -2,9 +2,9 @@
 
 namespace Core.DTO.AccountsDtos
 {
-    public class DeleteUserAccountDto
+    public class GetUserByRefreshTokenDto
     {
         [Required]
-        public string? Username { get; set; }
+        public string? RefreshToken { get; set; }
     }
 }
