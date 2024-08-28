@@ -29,7 +29,7 @@ To get started with this project, follow these steps:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/youssef-rafie212/Beqaltk-API.git
+   git clone https://github.com/youssef-rafie212/Auth-System.git
    ```
 2. **Navigate to the project directory**
 
